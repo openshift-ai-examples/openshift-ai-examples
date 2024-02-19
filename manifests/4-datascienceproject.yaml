@@ -1,0 +1,10 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: rhoai-demo
+  labels:
+    opendatahub.io/dashboard: 'true'
+  annotations:
+    openshift.io/description: 'Demo project for RHOAI'
+    openshift.io/display-name: rhoai-demo
+spec: {}

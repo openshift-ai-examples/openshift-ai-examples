@@ -1,0 +1,23 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: openshift-operators-redhat
+spec: {}
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: openshift-distributed-tracing
+spec: {}
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: openshift-serverless
+spec: {}
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: redhat-ods-operator
+spec: {}
