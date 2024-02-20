@@ -21,7 +21,7 @@ oc apply -f manifests/3-subscriptions.yaml
 
 4. Create the DataScienceCluster object:
 ```bash
-oc apply -f manifests/5-datasciencecluster.yaml
+oc apply -f manifests/4-datasciencecluster.yaml
 ```
 
 5. Create the data science project:
