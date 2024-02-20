@@ -9,22 +9,27 @@ Procedure:
 oc apply -f manifests/1-namespaces.yaml
 ```
 
-2. Create subscriptions for required operators:
+2. Create OperatorGroup objects for required operators:
 ```bash
-oc apply -f manifests/2-subscriptions.yaml
+oc apply -f manifests/2-operatorgroups.yaml
 ```
 
-3. Create the DataScienceCluster object:
+3. Create Subscription objects for required operators:
 ```bash
-oc apply -f manifests/3-datasciencecluster.yaml
+oc apply -f manifests/3-subscriptions.yaml
 ```
 
-4. Create the data science project:
+4. Create the DataScienceCluster object:
 ```bash
-oc apply -f manifests/4-datascienceproject.yaml
+oc apply -f manifests/5-datasciencecluster.yaml
 ```
 
-5. Create the Minio s3 storage and data connections
+5. Create the data science project:
+```bash
+oc apply -f manifests/5-datascienceproject.yaml
+```
+
+6. Create the Minio s3 storage and data connections
 ```bash
 oc apply -n rhoai-demo -f https://github.com/rh-aiservices-bu/fraud-detection/raw/main/setup/setup-s3.yaml
 ```
