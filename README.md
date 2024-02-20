@@ -34,7 +34,7 @@ servicemeshoperator.v2.4.5      Red Hat OpenShift Service Mesh                  
 
 5. Create the DataScienceCluster object:
 ```bash
-oc apply -f manifests/5-datasciencecluster.yaml
+oc apply -f manifests/4-datasciencecluster.yaml
 ```
 
 6. Create the data science project:
