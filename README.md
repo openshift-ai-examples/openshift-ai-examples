@@ -22,7 +22,9 @@ oc apply -f manifests/3-subscriptions.yaml
 4. Wait for all operators to successfully install
 ```bash
 oc get csv -w -n default
+```
 
+```bash
 NAME                            DISPLAY                                          VERSION    REPLACES                             PHASE
 elasticsearch-operator.v5.8.3   OpenShift Elasticsearch Operator                 5.8.3      elasticsearch-operator.v5.8.2        Succeeded
 jaeger-operator.v1.51.0-1       Red Hat OpenShift distributed tracing platform   1.51.0-1   jaeger-operator.v1.47.1-5            Succeeded
