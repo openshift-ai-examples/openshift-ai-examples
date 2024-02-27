@@ -41,9 +41,13 @@ https://github.com/openshift-ai-examples/openshift-ai-examples.git
 
 ![](https://github.com/openshift-ai-examples/openshift-ai-examples/blob/main/openshift-ai-deploy-llm/assets/clone.png)
 
-5. Open get_model.ipynb and run each cell (openshift-ai-examples/openshift-ai-deploy-llm/notebooks/get_model.ipynb)
+5. Download and convert the model to Caikit format:
 
-6. Open upload_model.ipynb and run each cell (openshift-ai-examples/openshift-ai-deploy-llm/notebooks/upload_model.ipynb)
+* Open get_model.ipynb and run each cell (openshift-ai-examples/openshift-ai-deploy-llm/notebooks/get_model.ipynb)
+
+6. Upload the converted model to the MinIO S3 bucket:
+
+* Open upload_model.ipynb and run each cell (openshift-ai-examples/openshift-ai-deploy-llm/notebooks/upload_model.ipynb)
 
 7. Serve the model with Caikit TGIS (This will take a little while):
 ```bash
