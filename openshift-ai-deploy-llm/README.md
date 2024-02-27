@@ -45,7 +45,14 @@ https://github.com/openshift-ai-examples/openshift-ai-examples.git
 
 6. Open upload_model.ipynb and run each cell (openshift-ai-examples/openshift-ai-deploy-llm/notebooks/upload_model.ipynb)
 
-7. Serve the model with Caikit TGIS:
+7. Serve the model with Caikit TGIS (This will take a little while):
 ```bash
 oc apply -n rhoai-demo-llm -f manifests/4-serve-model.yaml
 ```
+
+8. Test the llm
+```bash
+curl -kL -H 'Content-Type: application/json' -d '{"model_id": "flan-t5-small-caikit", "inputs": "Is this working?"}' https://$(oc get route flan-t5-rhoai-demo-llm -n istio-system -o jsonpath='{.spec.host}')/api/v1/task/text-generation
+
+{"generated_text": "yes", "generated_tokens": 2, "finish_reason": "EOS_TOKEN", "producer_id": {"name": "Text Generation", "version": "0.1.0"}, "input_token_count": 6, "seed": null}% 
+``` 
