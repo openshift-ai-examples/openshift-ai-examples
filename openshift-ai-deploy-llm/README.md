@@ -23,7 +23,7 @@ oc process -f manifests/3-notebook-template.yaml -n rhoai-demo-llm \
 ```
 3. Access the workbench from the data science project:
 
-Click the "Open" link for the workbench to access the Jupyter notebook.
+* Click the "Open" link for the workbench to access the Jupyter notebook.
 
 ![](https://github.com/openshift-ai-examples/openshift-ai-examples/blob/main/openshift-ai-deploy-llm/assets/open_notebook.png)
 
@@ -37,6 +37,15 @@ Click the "Open" link for the workbench to access the Jupyter notebook.
 https://github.com/openshift-ai-examples/openshift-ai-examples.git
 ```
 
-* Paste and click Clone:
+* Paste and click "Clone":
 
 ![](https://github.com/openshift-ai-examples/openshift-ai-examples/blob/main/openshift-ai-deploy-llm/assets/clone.png)
+
+5. Open get_model.ipynb and run each cell (openshift-ai-examples/openshift-ai-deploy-llm/notebooks/get_model.ipynb)
+
+6. Open upload_model.ipynb and run each cell (openshift-ai-examples/openshift-ai-deploy-llm/notebooks/upload_model.ipynb)
+
+7. Serve the model with Caikit TGIS:
+```bash
+oc apply -n rhoai-demo-llm -f manifests/4-serve-model.yaml
+```

@@ -1,0 +1,89 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    openshift.io/display-name: flan-t5
+    serving.knative.openshift.io/enablePassthrough: 'true'
+    sidecar.istio.io/inject: 'true'
+    sidecar.istio.io/rewriteAppHTTPProbers: 'true'
+  name: flan-t5
+  namespace: rhoai-demo-llm
+  labels:
+    opendatahub.io/dashboard: 'true'
+spec:
+  predictor:
+    maxReplicas: 1
+    minReplicas: 1
+    model:
+      modelFormat:
+        name: caikit
+      name: ''
+      resources: {}
+      runtime: flan-t5
+      storage:
+        key: aws-connection-my-storage
+        path: models/flan-t5-small-caikit
+---
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  annotations:
+    opendatahub.io/accelerator-name: ''
+    opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
+    opendatahub.io/template-display-name: Caikit TGIS ServingRuntime for KServe
+    opendatahub.io/template-name: caikit-tgis-runtime
+    openshift.io/display-name: flan-t5
+  name: flan-t5
+  namespace: rhoai-demo-llm
+  labels:
+    opendatahub.io/dashboard: 'true'
+spec:
+  containers:
+    - args:
+        - '--model-name=/mnt/models/artifacts/'
+      command:
+        - text-generation-launcher
+      env:
+        - name: TRANSFORMERS_CACHE
+          value: /tmp/transformers_cache
+      image: 'quay.io/modh/text-generation-inference:rhoai-2.6'
+      name: kserve-container
+      resources:
+        limits:
+          cpu: '2'
+          memory: 8Gi
+        requests:
+          cpu: '1'
+          memory: 4Gi
+      volumeMounts:
+        - mountPath: /dev/shm
+          name: shm
+    - env:
+        - name: RUNTIME_LOCAL_MODELS_DIR
+          value: /mnt/models
+        - name: RUNTIME_GRPC_SERVER_THREAD_POOL_SIZE
+          value: '64'
+      image: 'quay.io/modh/caikit-tgis-serving:rhoai-2.6'
+      name: transformer-container
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+      resources:
+        limits:
+          cpu: '2'
+          memory: 8Gi
+        requests:
+          cpu: '1'
+          memory: 4Gi
+      volumeMounts:
+        - mountPath: /dev/shm
+          name: shm
+  multiModel: false
+  supportedModelFormats:
+    - autoSelect: true
+      name: caikit
+  volumes:
+    - emptyDir:
+        medium: Memory
+        sizeLimit: 2Gi
+      name: shm
