@@ -21,3 +21,6 @@ oc process -f manifests/3-notebook-template.yaml -n rhoai-demo-llm \
 -p NOTEBOOK_IMAGE=$(oc get is s2i-minimal-notebook -n redhat-ods-applications -o jsonpath='{.status.dockerImageRepository}{":"}{.spec.tags[-1].name}') \
 | oc create -f -
 ```
+3. Access the workbench from the data science project:
+
+Click the "Open" link for the workbench to access the Jupyter notebook.
