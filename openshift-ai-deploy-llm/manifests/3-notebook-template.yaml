@@ -1,0 +1,191 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: notebook
+  annotations:
+    openshift.io/display-name: Notebook
+message: |-
+  The following service(s) have been created in your project: ${NAME}, ${DATABASE_SERVICE_NAME}.
+
+  For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/cakephp-ex/blob/master/README.md.
+objects:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      annotations:
+        openshift.io/display-name: '${NAME}'
+      name: '${NAME}'
+      namespace: '${NAMESPACE}'
+      labels:
+        opendatahub.io/dashboard: 'true'
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+      volumeMode: Filesystem
+    status:
+      phase: Bound
+      accessModes:
+        - ReadWriteOnce
+      capacity:
+        storage: 20Gi
+  - apiVersion: kubeflow.org/v1
+    kind: Notebook
+    metadata:
+      annotations:
+        notebooks.opendatahub.io/inject-oauth: 'true'
+        notebooks.opendatahub.io/oauth-logout-url: 'https://rhods-dashboard-redhat-ods-applications.${INGRESS_DOMAIN}/projects/${NAMESPACE}?notebookLogout=${NAME}'
+        opendatahub.io/odh-managed: 'true'
+        opendatahub.io/image-display-name: Minimal Python
+        openshift.io/display-name: '${NAME}'
+      name: '${NAME}'
+      namespace: '${NAMESPACE}'
+      labels:
+        app: '${NAME}'
+        opendatahub.io/dashboard: 'true'
+    spec:
+      template:
+        spec:
+          affinity: {}
+          containers:
+            - resources:
+                limits:
+                  cpu: '2'
+                  memory: 8Gi
+                requests:
+                  cpu: '1'
+                  memory: 8Gi
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /notebook/${NAMESPACE}/${NAME}/api
+                  port: notebook-port
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                successThreshold: 1
+                timeoutSeconds: 1
+              name: '${NAME}'
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /notebook/${NAMESPACE}/${NAME}/api
+                  port: notebook-port
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                successThreshold: 1
+                timeoutSeconds: 1
+              env:
+                - name: NOTEBOOK_ARGS
+                  value: |-
+                    --ServerApp.port=8888
+                    --ServerApp.token=''
+                    --ServerApp.password=''
+                    --ServerApp.base_url='/notebook/${NAMESPACE}/${NAME}'
+                    --ServerApp.quit_button=False
+                    --ServerApp.tornado_settings={"user":"admin","hub_host":"https://rhods-dashboard-redhat-ods-applications.${INGRESS_DOMAIN}","hub_prefix":"/projects/${NAMESPACE}"}
+                - name: JUPYTER_IMAGE
+                  value: '${NOTEBOOK_IMAGE}'
+              ports:
+                - containerPort: 8888
+                  name: notebook-port
+                  protocol: TCP
+              imagePullPolicy: Always
+              volumeMounts:
+                - mountPath: /opt/app-root/src
+                  name: '${NAME}'
+                - mountPath: /dev/shm
+                  name: shm
+              envFrom:
+                - secretRef:
+                    name: aws-connection-my-storage
+              image: '${NOTEBOOK_IMAGE}'
+              workingDir: /opt/app-root/src
+            - resources:
+                limits:
+                  cpu: 100m
+                  memory: 64Mi
+                requests:
+                  cpu: 100m
+                  memory: 64Mi
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /oauth/healthz
+                  port: oauth-proxy
+                  scheme: HTTPS
+                initialDelaySeconds: 5
+                periodSeconds: 5
+                successThreshold: 1
+                timeoutSeconds: 1
+              name: oauth-proxy
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: /oauth/healthz
+                  port: oauth-proxy
+                  scheme: HTTPS
+                initialDelaySeconds: 30
+                periodSeconds: 5
+                successThreshold: 1
+                timeoutSeconds: 1
+              env:
+                - name: NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.namespace
+              ports:
+                - containerPort: 8443
+                  name: oauth-proxy
+                  protocol: TCP
+              imagePullPolicy: Always
+              volumeMounts:
+                - mountPath: /etc/oauth/config
+                  name: oauth-config
+                - mountPath: /etc/tls/private
+                  name: tls-certificates
+              image: 'registry.redhat.io/openshift4/ose-oauth-proxy@sha256:4bef31eb993feb6f1096b51b4876c65a6fb1f4401fee97fa4f4542b6b7c9bc46'
+              args:
+                - '--provider=openshift'
+                - '--https-address=:8443'
+          enableServiceLinks: false
+          serviceAccountName: ${NAME}
+          volumes:
+            - name: ${NAME}
+              persistentVolumeClaim:
+                claimName: ${NAME}
+            - emptyDir:
+                medium: Memory
+              name: shm
+            - name: oauth-config
+              secret:
+                defaultMode: 420
+                secretName: ${NAME}-oauth-config
+            - name: tls-certificates
+              secret:
+                defaultMode: 420
+                secretName: ${NAME}-tls
+parameters:
+  - name: NAME
+    displayName: Name
+    description: Notebook and dependency names
+    value: minimal-python
+    required: true
+  - name: INGRESS_DOMAIN
+    displayName: Ingress Domain
+    description: OpenShift default ingress domain
+    required: true
+  - name: NAMESPACE
+    displayName: Namespace
+    description: Notebook namespace
+    value: rhoai-demo-llm
+    required: true
+  - name: NOTEBOOK_IMAGE
+    displayName: Notebook Image
+    description: Notebook image
+    required: true
+labels:
+  template: notebook
