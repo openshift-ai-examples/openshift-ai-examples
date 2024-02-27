@@ -24,10 +24,12 @@ oc process -f manifests/3-notebook-template.yaml -n rhoai-demo-llm \
 3. Access the workbench from the data science project:
 
 Click the "Open" link for the workbench to access the Jupyter notebook.
+
 ![](https://github.com/openshift-ai-examples/openshift-ai-examples/blob/main/openshift-ai-deploy-llm/assets/open_notebook.png)
 
 4. Clone the git repository within the notebook:
 * Click the Git Clone icon:
+
 ![](https://github.com/openshift-ai-examples/openshift-ai-examples/blob/main/openshift-ai-deploy-llm/assets/git_clone_button.png)
 
 * Copy the git repository URL:
@@ -36,4 +38,5 @@ https://github.com/openshift-ai-examples/openshift-ai-examples.git
 ```
 
 * Paste and click Clone:
+
 ![](https://github.com/openshift-ai-examples/openshift-ai-examples/blob/main/openshift-ai-deploy-llm/assets/clone.png)
