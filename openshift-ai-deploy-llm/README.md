@@ -1,6 +1,6 @@
 # openshift-ai-deploy-llm
 
-This is an example of how to quickly deploy a small llm on a Red Hat OpenShift AI data science cluster.
+This is an example of how to quickly deploy a small llm ([google/flan-t5-small](https://huggingface.co/google/flan-t5-small)) on a Red Hat OpenShift AI data science cluster.
 
 Procedure:
 
